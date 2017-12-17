@@ -20,28 +20,26 @@ get_header(); ?>
 				$idx = 0;
 				if ($query_images->have_posts()):
 					while($query_images->have_posts()) :
-						
 						$query_images->the_post();
 						$image = wp_get_attachment_image_src( get_the_ID(), 'carldetorres-grid-image')[0];			
 			?>			
 			
 				<?php
-					if ($idx % 4 == 0):
+					if ($idx++ % 4 == 0):
 				?>
-					<div class="row">
+					<div class="row top-buffer">
 				<?php
 					endif;
 				?>
-
-					<div class="col">
-						<div class="card cdgd">
-							<img class="card-img-top" src="<?php echo $image; ?>">
-							<div class="card-block">
-								<p class="card-title"><?php echo the_title(); ?>: <?php echo $idx++; ?></p>
-								<a href="#" class="btn btn-primary">Buy</a>
+						<div class="col-lg-3">
+							<div class="card cdgd">
+								<img class="card-img-top" src="<?php echo $image; ?>">
+								<div class="card-block">
+									<p class="card-title"><?php echo the_title(); ?></p>
+									<a href="#" class="btn btn-secondary">Buy</a>
+								</div>
 							</div>
 						</div>
-					</div>
 				<?php
 					if ($idx % 4 == 0):
 				?>
@@ -54,7 +52,7 @@ get_header(); ?>
 				endif;
 			?>			
 		</main>
-	</div>
+	</div>  <!-- .container -->
 </div>
 
 <?php get_footer(); ?> 
