@@ -71,3 +71,5 @@ require get_template_directory() . '/inc/woocommerce.php';
  * Load Editor functions.
  */
 require get_template_directory() . '/inc/editor.php';
+
+add_image_size( 'carldetorres-grid-image', 250, 250 );
