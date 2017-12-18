@@ -22,7 +22,7 @@ get_header(); ?>
 					while($query_images->have_posts()) :
 						$query_images->the_post();
 						$image = wp_get_attachment_image_src( get_the_ID(), 'carldetorres-grid-image')[0];			
-			?>			
+			?>		
 			
 				<?php
 					if ($idx++ % 4 == 0):

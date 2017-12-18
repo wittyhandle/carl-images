@@ -1,10 +1,20 @@
 // This is an empty scss file for your custom styles - Please add your super duper awesome mega design styles here
 
-$accent-color: #343a40;
+$link-color: #02182B;
+$accent-color: #00A6ED;
 $primary-color: #868e96;
 
-a {
+.btn-primary {
+	background-color: $accent-color;
+	border-color: $accent-color;
+}
+
+h1, h2, h3 {
 	color: $accent-color;
+}
+
+a {
+	color: $link-color;
 }
 
 body {
@@ -35,4 +45,12 @@ body {
 
 .top-buffer:not(:first-child) { 
 	margin-top: 30px;
+}
+
+.tml {
+	max-width: none;
+
+	p {
+		margin-bottom: 0;
+	}
 }
