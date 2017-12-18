@@ -73,3 +73,33 @@ require get_template_directory() . '/inc/woocommerce.php';
 require get_template_directory() . '/inc/editor.php';
 
 add_image_size( 'carldetorres-grid-image', 250, 250 );
+
+
+function create_post_type() {
+	
+	$labels = array(
+		'name' => 'Clients',
+		'singular_name' => 'Client',
+		'menu_name' => 'Clients',
+		'add_new_item' => 'Add New Client',
+		'edit_item' => 'Edit Client'		
+	);
+
+
+	register_post_type( 'cdgd_client',
+    	array(
+      		'labels' => $labels,
+      		'public' => false,
+      		'publicly_queryable' => true,
+      		'capability_type' => 'post',
+      		'show_ui' => true,
+      		'has_archive' => true,
+      		'menu_icon' => 'dashicons-businessman',
+      		'supports' => array('title')
+    	)
+  	);
+}
+add_action( 'init', 'create_post_type' );
+
+// remove the admin toolbar from the front-facing site
+add_filter('show_admin_bar', '__return_false');
