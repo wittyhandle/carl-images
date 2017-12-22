@@ -75,9 +75,19 @@ require get_template_directory() . '/inc/editor.php';
 add_image_size( 'carldetorres-grid-image', 250, 250 );
 
 
+if ( ! function_exists('write_log')) {
+ function write_log ( $log )  {
+    if ( is_array( $log ) || is_object( $log ) ) {
+       error_log( print_r( $log, true ) );
+    } else {
+       error_log( $log );
+    }
+ }
+}
+
 function create_post_type() {
 	
-	$labels = array(
+  $labels = array(
 		'name' => 'Clients',
 		'singular_name' => 'Client',
 		'menu_name' => 'Clients',

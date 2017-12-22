@@ -26,6 +26,27 @@ Theme My Login will always look in your theme's directory first, before using th
 
 				<p class="tml-registration-confirmation" id="reg_passmail<?php $template->the_instance(); ?>"><?php echo apply_filters( 'tml_register_passmail_template_message', __( 'Registration confirmation will be e-mailed to you.', 'theme-my-login' ) ); ?></p>
 
+				<p>
+					<label for="client">Client</label>
+					<select name="client">
+						<?php
+							$args = array(
+								'post_type' => 'cdgd_client',
+								'posts_per_page' => -1
+							);
+							$query_clients = new WP_Query( $args );
+							if ($query_clients->have_posts()):
+								while($query_clients->have_posts()):
+									$query_clients->the_post();
+						?>
+									<option value="<?php echo get_the_ID(); ?>"><?php echo the_title(); ?></option>
+						<?php
+								endwhile;
+							endif;
+						?>
+					</select>
+				</p>
+
 				<p class="tml-submit-wrap">
 					<input type="submit" name="wp-submit" class="btn btn-primary" id="wp-submit<?php $template->the_instance(); ?>" value="<?php esc_attr_e( 'Register', 'theme-my-login' ); ?>" />
 					<input type="hidden" name="redirect_to" value="<?php $template->the_redirect_url( 'register' ); ?>" />
