@@ -13,13 +13,9 @@ get_header(); ?>
 				wp_get_current_user();
 			?>
 
-
-
 			<p>User: <?php echo get_user_meta($current_user->ID, 'cdgd_client', true); ?></p>
 
 			<?php
-
-				//print_r(get_user_meta($current_user->ID));
 
 				$args = array(
 					'post_type' => 'attachment',
@@ -34,7 +30,7 @@ get_header(); ?>
 						),
 						array(
 							'key' => 'cdgd_client',
-							'value' => '56'
+							'value' => '58'
 						)
 					)
 				);
@@ -48,8 +44,6 @@ get_header(); ?>
 			?>		
 			
 					<?php
-						//print_r(get_post_meta(get_the_ID(), 'client', true));
-						print_r(get_post_meta(get_the_ID()));
 						if ($idx++ % 4 == 0):
 					?>
 						<div class="row top-buffer">

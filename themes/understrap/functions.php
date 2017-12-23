@@ -95,21 +95,93 @@ function create_post_type() {
 		'edit_item' => 'Edit Client'		
 	);
 
-
-	register_post_type( 'cdgd_client',
-    	array(
-      		'labels' => $labels,
-      		'public' => false,
-      		'publicly_queryable' => true,
-      		'capability_type' => 'post',
-      		'show_ui' => true,
-      		'has_archive' => true,
-      		'menu_icon' => 'dashicons-businessman',
-      		'supports' => array('title')
-    	)
-  	);
+  register_post_type( 'cdgd_client',
+  	array(
+    		'labels' => $labels,
+    		'public' => false,
+    		'publicly_queryable' => true,
+    		'capability_type' => 'post',
+    		'show_ui' => true,
+    		'has_archive' => true,
+    		'menu_icon' => 'dashicons-businessman',
+    		'supports' => array('title')
+  	)
+	);
 }
 add_action( 'init', 'create_post_type' );
 
 // remove the admin toolbar from the front-facing site
 add_filter('show_admin_bar', '__return_false');
+
+
+// *** Custom columns for the client post type *** //
+
+add_filter("manage_media_columns", "set_custom_edit_client_columns");
+function set_custom_edit_client_columns($columns) {
+  $columns['client'] = 'Client';
+  return $columns;
+}
+
+add_action( 'manage_media_custom_column' , 'custom_client_column', 10, 2 );
+function custom_client_column( $column, $post_id ) {
+  
+  $client_id = get_post_meta($post_id, 'cdgd_client', true);  
+  if ( ! empty( $client_id ) ) {
+    echo get_the_title($client_id);
+  }
+  
+}
+
+add_action('admin_head', 'cdgd_custom_admin_css');
+function cdgd_custom_admin_css() {
+  echo '<style>
+    .column-client {width: 10%}
+  </style>';
+}
+
+add_filter( 'manage_upload_sortable_columns', 'sortable_client_column' );
+function sortable_client_column( $columns ) {
+  $columns['client'] = 'client';
+  return $columns;
+}
+
+add_filter( 'posts_clauses', 'client_order_by_posts_clauses', 1, 2 );
+function client_order_by_posts_clauses($pieces, $query) {
+
+  // source in $wpdb for custom queries
+  global $wpdb;
+
+  // only run in the main wp query and if orderby is present
+  if ( $query->is_main_query() && ( $orderby = $query->get( 'orderby' ) ) ) {
+
+    // Get order from the query
+    $order = strtoupper( $query->get( 'order' ) );
+
+    if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) ) {
+      $order = 'ASC';
+    }
+
+    switch ( $orderby ) {
+
+      case 'client':
+
+        // join by the postmeta to find links between images and the id of clients
+        $pieces[ 'join' ] .= " LEFT JOIN $wpdb->postmeta pm on pm.meta_key = 'cdgd_client' AND pm.post_id = {$wpdb->posts}.id ";
+        // join by the posts table again to find links between the client id and its custom post
+        $pieces[ 'join' ] .= " LEFT JOIN $wpdb->posts cl on pm.meta_value = cl.id ";
+        // order by the joined post_title of the client post
+        $pieces[ 'orderby' ] = " cl.post_title $order, " . $pieces[ 'orderby' ];
+
+      break;
+
+    }
+
+  }
+
+  return $pieces;
+
+
+}
+
+
+// *** ************************************** *** //
