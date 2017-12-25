@@ -37,6 +37,24 @@ body {
 
 }
 
+.nav.navbar-right {
+	div {
+		margin-right: 10px;
+
+		&:last-child {
+			margin-right: 0;
+		}
+
+		a {
+			color: $primary-color;
+			&:hover {
+				color: $accent-color;
+			}
+		}
+	}
+}
+
+
 .card {
 	&.cdgd {
 		width: 250px;

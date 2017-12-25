@@ -73,6 +73,16 @@ $container = get_theme_mod( 'understrap_container_type' );
 						'walker'          => new understrap_WP_Bootstrap_Navwalker(),
 					)
 				); ?>
+
+				<div class="nav navbar-right">
+				<?php if ( ! is_user_logged_in() ): ?>
+					<div><a href="/login">log in</a></div>
+					<div><a href="/register">register</a></div>
+				<?php else: ?>
+					<div><a href="<?php echo wp_logout_url(); ?>">logout</a></div>
+				<?php endif; ?>
+				</div>
+
 			<?php if ( 'container' == $container ) : ?>
 			</div><!-- .container -->
 			<?php endif; ?>
