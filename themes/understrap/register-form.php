@@ -35,14 +35,10 @@ Theme My Login will always look in your theme's directory first, before using th
 								'posts_per_page' => -1
 							);
 							$query_clients = new WP_Query( $args );
-							if ($query_clients->have_posts()):
-								while($query_clients->have_posts()):
-									$query_clients->the_post();
-						?>
-									<option value="<?php echo get_the_ID(); ?>"><?php echo the_title(); ?></option>
+							while( $query_clients->have_posts() ): $query_clients->the_post(); ?>
+								<option value="<?php echo get_the_ID(); ?>"><?php echo the_title(); ?></option>
 						<?php
-								endwhile;
-							endif;
+							endwhile;							
 						?>
 					</select>
 				</p>
