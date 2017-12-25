@@ -79,34 +79,34 @@ if ( ! function_exists('write_log')) {
  function write_log ( $log )  {
     if ( is_array( $log ) || is_object( $log ) ) {
        error_log( print_r( $log, true ) );
-    } else {
+   } else {
        error_log( $log );
-    }
- }
+   }
+}
 }
 
 function create_post_type() {
-	
+
   $labels = array(
-		'name' => 'Clients',
-		'singular_name' => 'Client',
-		'menu_name' => 'Clients',
-		'add_new_item' => 'Add New Client',
-		'edit_item' => 'Edit Client'		
-	);
+    'name' => 'Clients',
+    'singular_name' => 'Client',
+    'menu_name' => 'Clients',
+    'add_new_item' => 'Add New Client',
+    'edit_item' => 'Edit Client'        
+);
 
   register_post_type( 'cdgd_client',
-  	array(
-    		'labels' => $labels,
-    		'public' => false,
-    		'publicly_queryable' => true,
-    		'capability_type' => 'post',
-    		'show_ui' => true,
-    		'has_archive' => true,
-    		'menu_icon' => 'dashicons-businessman',
-    		'supports' => array('title')
-  	)
-	);
+    array(
+        'labels' => $labels,
+        'public' => false,
+        'publicly_queryable' => true,
+        'capability_type' => 'post',
+        'show_ui' => true,
+        'has_archive' => true,
+        'menu_icon' => 'dashicons-businessman',
+        'supports' => array('title')
+    )
+);
 }
 add_action( 'init', 'create_post_type' );
 
@@ -119,42 +119,42 @@ add_filter('show_admin_bar', '__return_false');
 add_filter("manage_media_columns", "set_custom_edit_client_columns");
 add_filter("manage_users_columns", "set_custom_edit_client_columns");
 function set_custom_edit_client_columns($columns) {
-  $columns['client'] = 'Client';
-  return $columns;
+    $columns['client'] = 'Client';
+    return $columns;
 }
 
 add_action( 'manage_media_custom_column' , 'custom_client_column', 10, 2 );
 function custom_client_column( $column, $post_id ) {
-  
-  $client_id = get_post_meta($post_id, 'cdgd_client', true);  
-  if ( ! empty( $client_id ) ) {
-    echo get_the_title($client_id);
-  }
-  
+
+    $client_id = get_post_meta($post_id, 'cdgd_client', true);  
+    if ( ! empty( $client_id ) ) {
+        echo get_the_title($client_id);
+    }
+
 }
 
 add_filter( 'manage_users_custom_column', 'custom_client_column_for_users', 10, 3 );
 function custom_client_column_for_users( $val, $column_name, $user_id ) {
-  $client_id = get_the_author_meta( 'cdgd_client', $user_id );
-  if ( ! empty( $client_id ) ) {
-    return get_the_title($client_id);
-  }
+    $client_id = get_the_author_meta( 'cdgd_client', $user_id );
+    if ( ! empty( $client_id ) ) {
+        return get_the_title($client_id);
+    }
 
-  return '';
+    return '';
 }
 
 add_action('admin_head', 'cdgd_custom_admin_css');
 function cdgd_custom_admin_css() {
-  echo '<style>
+    echo '<style>
     .column-client {width: 10%}
-  </style>';
+    </style>';
 }
 
 add_filter( 'manage_upload_sortable_columns', 'sortable_client_column' );
 add_filter( 'manage_users_sortable_columns', 'sortable_client_column' );
 function sortable_client_column( $columns ) {
-  $columns['client'] = 'client';
-  return $columns;
+    $columns['client'] = 'client';
+    return $columns;
 }
 
 add_filter( 'posts_clauses', 'client_order_by_posts_clauses', 1, 2 );
@@ -170,13 +170,11 @@ function client_order_by_posts_clauses($pieces, $query) {
     $order = strtoupper( $query->get( 'order' ) );
 
     if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) ) {
-      $order = 'ASC';
+        $order = 'ASC';
     }
 
     switch ( $orderby ) {
-
-      case 'client':
-
+        case 'client':
         // join by the postmeta to find links between images and the id of clients
         $pieces[ 'join' ] .= " LEFT JOIN $wpdb->postmeta pm on pm.meta_key = 'cdgd_client' AND pm.post_id = {$wpdb->posts}.id ";
         // join by the posts table again to find links between the client id and its custom post
@@ -184,37 +182,36 @@ function client_order_by_posts_clauses($pieces, $query) {
         // order by the joined post_title of the client post
         $pieces[ 'orderby' ] = " cl.post_title $order, " . $pieces[ 'orderby' ];
 
-      break;
-
+        break;
     }
 
-  }
+}
 
-  return $pieces;
+return $pieces;
 
 }
 
 add_action('pre_user_query','client_pre_user_query');
 function client_pre_user_query($user_search) {
 
-  global $wpdb,$current_screen;
+    global $wpdb,$current_screen;
 
-  if ( 'users' != $current_screen->id ) {
-    return;
-  }        
+    if ( 'users' != $current_screen->id ) {
+        return;
+    }        
 
-  $vars = $user_search->query_vars;
+    $vars = $user_search->query_vars;
 
-  switch ( $vars['orderby'] ) {
+    switch ( $vars['orderby'] ) {
 
-    case 'client':
-      // join usermeta to get the meta row based on user id
-      $user_search->query_from .= " LEFT JOIN {$wpdb->usermeta} m1 ON {$wpdb->users}.ID=m1.user_id AND (m1.meta_key='cdgd_client') "; 
-      $user_search->query_from .= " LEFT JOIN $wpdb->posts cl on m1.meta_value = cl.id "; 
-      $user_search->query_orderby = ' ORDER BY cl.post_title ' . $vars['order'];
-    break;
+        case 'client':
+            // join usermeta to get the meta row based on user id
+            $user_search->query_from .= " LEFT JOIN {$wpdb->usermeta} m1 ON {$wpdb->users}.ID=m1.user_id AND (m1.meta_key='cdgd_client') "; 
+            $user_search->query_from .= " LEFT JOIN $wpdb->posts cl on m1.meta_value = cl.id "; 
+            $user_search->query_orderby = ' ORDER BY cl.post_title ' . $vars['order'];
+        break;
 
-  }
+    }
 
 }
 
