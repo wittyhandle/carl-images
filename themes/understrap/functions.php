@@ -117,6 +117,7 @@ add_filter('show_admin_bar', '__return_false');
 // *** Custom columns for the client post type *** //
 
 add_filter("manage_media_columns", "set_custom_edit_client_columns");
+add_filter("manage_users_columns", "set_custom_edit_client_columns");
 function set_custom_edit_client_columns($columns) {
   $columns['client'] = 'Client';
   return $columns;
@@ -132,6 +133,16 @@ function custom_client_column( $column, $post_id ) {
   
 }
 
+add_filter( 'manage_users_custom_column', 'custom_client_column_for_users', 10, 3 );
+function custom_client_column_for_users( $val, $column_name, $user_id ) {
+  $client_id = get_the_author_meta( 'cdgd_client', $user_id );
+  if ( ! empty( $client_id ) ) {
+    return get_the_title($client_id);
+  }
+
+  return '';
+}
+
 add_action('admin_head', 'cdgd_custom_admin_css');
 function cdgd_custom_admin_css() {
   echo '<style>
@@ -140,6 +151,7 @@ function cdgd_custom_admin_css() {
 }
 
 add_filter( 'manage_upload_sortable_columns', 'sortable_client_column' );
+add_filter( 'manage_users_sortable_columns', 'sortable_client_column' );
 function sortable_client_column( $columns ) {
   $columns['client'] = 'client';
   return $columns;
@@ -180,6 +192,29 @@ function client_order_by_posts_clauses($pieces, $query) {
 
   return $pieces;
 
+}
+
+add_action('pre_user_query','client_pre_user_query');
+function client_pre_user_query($user_search) {
+
+  global $wpdb,$current_screen;
+
+  if ( 'users' != $current_screen->id ) {
+    return;
+  }        
+
+  $vars = $user_search->query_vars;
+
+  switch ( $vars['orderby'] ) {
+
+    case 'client':
+      // join usermeta to get the meta row based on user id
+      $user_search->query_from .= " LEFT JOIN {$wpdb->usermeta} m1 ON {$wpdb->users}.ID=m1.user_id AND (m1.meta_key='cdgd_client') "; 
+      $user_search->query_from .= " LEFT JOIN $wpdb->posts cl on m1.meta_value = cl.id "; 
+      $user_search->query_orderby = ' ORDER BY cl.post_title ' . $vars['order'];
+    break;
+
+  }
 
 }
 
