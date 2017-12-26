@@ -9,30 +9,32 @@ get_header(); ?>
 		<main class="site-main" id="main">
 			
 			<?php
-				global $current_user;
-				wp_get_current_user();
-			?>
+                
+                $meta_query = array(
+                    'relation' => 'OR',
+                    array(
+                        'key' => 'cdgd_client',
+                        'value' => 'null'
+                    ),
+                    array(
+                        'key' => 'cdgd_client',
+                        'compare' => 'NOT EXISTS'
+                    )
+                );
 
-			<p>User: <?php echo get_user_meta($current_user->ID, 'cdgd_client', true); ?></p>
-
-			<?php
+                if ( is_user_logged_in() ) {
+                    global $current_user;
+                    wp_get_current_user();
+                    $user_client = get_user_meta( $current_user->ID, 'cdgd_client', true );
+                    array_push($meta_query, array( 'key' => 'cdgd_client', 'value' => $user_client) );
+                }
 
 				$args = array(
 					'post_type' => 'attachment',
 					'post_mime_type' => 'image',
 					'post_status' => 'inherit',
 					'posts_per_page' => -1,
-					'meta_query' => array(
-						'relation' => 'OR',
-						array(
-							'key' => 'cdgd_client',
-							'value' => 'null'
-						),
-						array(
-							'key' => 'cdgd_client',
-							'value' => '58'
-						)
-					)
+					'meta_query' => $meta_query
 				);
 
 				$query_images = new WP_Query( $args );
